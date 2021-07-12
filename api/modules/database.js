@@ -1,36 +1,28 @@
-const knex = require('knex');
-
-let knexServer = null;
+const mongoose = require('mongoose');
 
 class Database {
   constructor() {
     if (!Database.instance) {
       Database.instance = this;
     }
-    Database.instance.connection = this.connection.bind(this);
     Database.instance.init = this.init.bind(this);
     return Database.instance;
   }
 
   init() {
-    const connectionObj = {
-      client: 'pg',
-      connection: {
-        host: process.env.DB_HOST,
-        user: process.env.DB_USERNAME,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_DATABASE,
-        port: process.env.DB_PORT,
-      },
-      searchPath: ['knex', 'public'],
-    };
-    console.log('===============initDatabase=================');
-    knexServer = knex(connectionObj);
+    // Connecting to the database
+    mongoose.set('useCreateIndex', true);
+    mongoose.connect(process.env.MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    }).then(() => {
+        console.log("Successfully connected to the database");
+    }).catch(err => {
+        console.log('Could not connect to the database. Exiting now...', err);
+        process.exit();
+    });
   }
-
-  connection() {
-    return knexServer;
-  }
+  
 }
 
 const instance = new Database();

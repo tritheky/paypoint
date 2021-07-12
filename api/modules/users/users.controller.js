@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const userService = require('./users.service');
-
 // routes
 router.post('/authenticate', authenticate);
 router.post('/cryptPassword', cryptPassword);
