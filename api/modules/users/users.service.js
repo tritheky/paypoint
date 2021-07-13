@@ -13,20 +13,6 @@ module.exports = {
 
 async function authenticate({ phone, password }) {
   const user = await UserModel.findOne({ "phone" : phone });
-  console.log(user);
-  // const users = await database
-  //   .connection()
-  //   .select(
-  //     'id',
-  //     'username',
-  //     'idcard',
-  //     'fullname',
-  //     'phone',
-  //     'admin',
-  //     'password',
-  //   )
-  //   .from('users')
-  //   .where({ username: username });
 
   if (!user) throw 'Username or password is incorrect';
 
@@ -38,7 +24,7 @@ async function authenticate({ phone, password }) {
     expiresIn: '1d',
   });
   return {
-    ...omitPassword(user),
+    user,
     token,
   };
 }
