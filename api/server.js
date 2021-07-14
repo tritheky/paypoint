@@ -32,7 +32,7 @@ app.use('/sms', require('./modules/sms/sms.controller'));
 app.use(errorHandler);
 
 // start server
-const port = process.env.NODE_ENV === 'production' ? 80 : 3000;
+const port = process.env.NODE_ENV === 'production' ? 80 : 5000;
 const server = app.listen(port, function () {
   console.log('Server listening on port ' + port);
   database.init();
