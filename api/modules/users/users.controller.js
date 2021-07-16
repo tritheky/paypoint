@@ -3,12 +3,11 @@ const router = express.Router();
 const userService = require('./users.service');
 // routes
 router.post('/authenticate', authenticate);
-router.post('/cryptPassword', cryptPassword);
 router.get('/', getAll);
 router.get('/:id', getBy);
 router.post('/', create);
 router.post('/', update);
-router.post('/', deleteBy);
+router.post('/:id', deleteBy);
 
 module.exports = router;
 
@@ -50,13 +49,6 @@ function create(req, res, next) {
 function update(req, res, next) {
   userService
     .update()
-    .then((data) => res.json(data))
-    .catch(next);
-}
-
-function cryptPassword(req, res, next) {
-  userService
-    .cryptPassword(req.body.password)
     .then((data) => res.json(data))
     .catch(next);
 }

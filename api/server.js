@@ -8,13 +8,14 @@ const jwt = require('helpers/jwt');
 const errorHandler = require('helpers/error-handler');
 const excelUploadMiddleware = require('helpers/excel-upload-middleware');
 const database = require('modules/database');
-
+require("cache-manager");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors({ origin: '*', methods: 'POST' }));
 
 app.use(jwt());
 // api routes
+app.use('/auth', require('./modules/auth/auth.controller'));
 app.use('/users', require('./modules/users/users.controller'));
 app.use('/rewards', require('./modules/rewards/rewards.controller'));
 app.use('/bookings', require('./modules/bookings/bookings.controller'));

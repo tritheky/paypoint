@@ -1,3 +1,6 @@
 {
-    "secret": "trichau2021"
+  "jwt_secret": "$2b$10$s/n89Dj3unXY54ZZ7eWu1O074O8i/Kzl5a9EBmInBLzBySxn/CxD2",
+  "jwt_exp": "3600000",
+  "jwt_refresh_secret": "$2b$10$ED4Fq2zjmOlZUj4JrdwtUuSGMC8PfcjPG7zUGE2/Dvb54Mflx1.2m",
+  "jwt_refresh_exp": "7200000"
 }

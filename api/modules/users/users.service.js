@@ -1,13 +1,11 @@
 const config = require('config.json');
+const helper = require('helpers/helper.js');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const UserModel = require('./users.model');
+const userModel = require('../dto/users.model');
 
 module.exports = {
   authenticate,
   getAll,
-  cryptPassword,
-  comparePassword,
   getById,
   create,
   update,
@@ -15,15 +13,19 @@ module.exports = {
 };
 
 async function authenticate({ phone, password, clientId }) {
-  const user = await UserModel.findOne({ phone: phone }).select('+password');
+  const user = await userModel.findOne({ phone: phone }).select('+password');
 
   if (!user) throw 'Username or password is incorrect';
-  if (password != user.password) {
-    //if (!(await comparePassword(password, user.password))) {
+  if (!(await helper.comparePassword(password, user.password))) {
     throw 'Mật khẩu không đúng.';
   }
   const token = jwt.sign(
-    { sub: user.id, fullname: user.fullname, email: user.email, admin: true },
+    {
+      userId: user.id,
+      fullname: user.fullname,
+      email: user.email,
+      admin: true,
+    },
     config.secret,
     {
       expiresIn: process.env.JWT_EXP,
@@ -35,10 +37,11 @@ async function authenticate({ phone, password, clientId }) {
 }
 
 async function getAll() {
-  return await UserModel.find({});
+  return await userModel.find({});
 }
+
 async function create(req) {
-  await UserModel.insertMany(req.body)
+  await userModel.insertMany(req.body)
     .then((u) => {
       return user;
     })
@@ -47,34 +50,20 @@ async function create(req) {
     });
 }
 async function update() {
-  return (await database.connection().select('*').from('users')).map((u) =>
-    omitPassword(u),
-  );
+  return null;
+  // return (await database.connection().select('*').from('users')).map((u) =>
+  //   omitPassword(u),
+  // );
 }
 async function getById(id) {
-  return (await database.connection().select('*').from('users')).map((u) =>
-    omitPassword(u),
-  );
+  return null;
+  // return (await database.connection().select('*').from('users')).map((u) =>
+  //   omitPassword(u),
+  // );
 }
 async function deleteById(id) {
-  return (await database.connection().select('*').from('users')).map((u) =>
-    omitPassword(u),
-  );
-}
-// helper functions
-
-function omitPassword(user) {
-  const { password, ...userWithoutPassword } = user;
-  return userWithoutPassword;
-}
-
-async function cryptPassword(password) {
-  const salt = await bcrypt.genSalt(10);
-  const hash = await bcrypt.hash(password, salt);
-  return hash;
-}
-
-async function comparePassword(plainPass, hashword) {
-  const match = await bcrypt.compare(plainPass, hashword);
-  return match;
+  return null;
+  // return (await database.connection().select('*').from('users')).map((u) =>
+  //   omitPassword(u),
+  // );
 }
