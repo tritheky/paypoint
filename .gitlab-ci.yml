@@ -1,0 +1,54 @@
+# Using the node image to build the React app
+
+image: node:latest
+variables:
+  PUBLIC_URL: /
+# Cache node modules - speeds up future builds
+cache:
+  paths:
+  - node_modules
+stages:
+- build
+- deploy
+build:
+  stage: build
+  script:
+    - cd api
+    - npm install # Install all dependencies
+    - npm run start --prod # Build for prod
+  artifacts:
+    paths:
+    - build 
+  only:
+    refs:
+      - master # Only run on master branch
+    changes:
+      - api/**/*
+deploy_production:
+  stage: deploy
+  image: ubuntu
+  before_script:
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+  - eval $(ssh-agent -s)
+  - mkdir -p ~/.ssh
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+  - chmod 700 ~/.ssh/id_rsa
+  - eval "$(ssh-agent -s)"
+  - ssh-add ~/.ssh/id_rsa
+  - ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
+  - apt-get install rsync -y -qq
+  - apt-get install curl -y -qq
+
+  script:
+    - echo "Deploying to server"
+    - ssh -i ~/.ssh/gitlab -o StrictHostKeyChecking=no USERNAME@IP-HOST -p PORT
+    - rsync -avz --progress -a -e "ssh -p PORT" build/ USERNAME@IP-HOST:/home/www/noithatrongviet.com/public_html
+    - echo "Deployed"
+  environment:
+    name: production
+    url: http:noithatrongviet.com
+  only:
+    refs:
+      - master # Only run on master branch
+    changes:
+      - api/**/*
