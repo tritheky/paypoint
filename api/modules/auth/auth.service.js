@@ -26,23 +26,20 @@ async function token({ phone, password, clientId }) {
 
 async function refreshToken({ refresh }) {
   var user = jwt.verify(refresh, config.jwt_refresh_secret);
-  console.log(user);
   const redisKey = `${user.clientId}_${user.phone}`;
   let redisValue = await cache.getAsync(redisKey);
   if (redisValue) {
     const redisParse = JSON.parse(redisValue);
     if (refresh != redisParse.refresh) throw 'Invalid Token';
-    const userModel = {
+    var userObj = {
       id: user.userId,
       phone: user.phone,
       email: user.email,
       fullname: user.fullname,
       admin: user.admin,
     };
-    if (user.phone === guest) userModel = null;
-    else {
-    }
-    return genToken(userModel, user.clientId);
+    if (user.phone === guest) userObj = null;
+    return genToken(userObj, user.clientId);
   }
 }
 
@@ -52,7 +49,8 @@ async function signout(token) {
   let redisValue = await cache.getAsync(redisKey);
   if (!redisValue) throw 'Invalid Token';
   const clearCount = await cache.clear(redisKey);
-  return clearCount > 1 ? 'True' : 'False';
+  console.log(clearCount);
+  return clearCount ? 'true' : 'false';
 }
 
 async function genToken(user, clientId) {
@@ -79,7 +77,7 @@ async function genToken(user, clientId) {
     refresh,
     refresh_expires_in: config.jwt_refresh_exp,
   };
-  const redisKey = `${clientId}_${user.phone}`;
+  const redisKey = `${userGenToken.clientId}_${userGenToken.phone}`;
   let cacheResponse = await cache.setAsync(redisKey, JSON.stringify(result));
   if (cacheResponse) {
     await cache.expireAsync(refresh, config.jwt_refresh_exp / 1000);

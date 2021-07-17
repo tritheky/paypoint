@@ -6,6 +6,7 @@ let user = new Schema({
     phone: {type: String, required: true},
     email: {type: String, required: true},
     password: {type: String, required: true, select: false},
+    admin: {type: Number, required: true},
     created: {type: Date, required: false},
     created_by: {type: Number, required: true},
     updated: {type: Date, required: false},
